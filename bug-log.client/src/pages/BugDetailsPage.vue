@@ -1,5 +1,5 @@
 <template>
-  <div class="BugDetails row mx-0 mt-2 flex-grow-1 d-flex flex-column">
+  <div v-if="Object.keys(state.bugCopy).length > 0" class="BugDetails row mx-0 mt-2 flex-grow-1 d-flex flex-column">
     <div class="col-md-12 p-0">
       <div class="row m-0">
         <div class="col-md-12 p-0">
@@ -100,86 +100,86 @@
         </div>
       </div>
     </div>
-  </div>
-  <!-- Modal for Edits -->
-  <div class="modal fade"
-       :id="'bug-edit-'+state.bug.id"
-       tabindex="-1"
-       role="dialog"
-       :aria-labelledby="'modelTitleId'+state.bug.id"
-       aria-hidden="true"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">
-            Edit Bug
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form @submit.prevent="editBug">
-            <div class="form-group">
-              <label :for="'title'+state.bug.id" class="">title </label>
-              <input class="mb-2 ml-2"
-                     type="string"
-                     :name="'title'+state.bug.id"
-                     :id="'title'+state.bug.id"
-                     placeholder="title..."
-                     required
-                     v-model="state.bugCopy.title"
-              >
-              <label :for="'description'+state.bug.id" class="">description </label>
-              <input class="mb-2 ml-2"
-                     type="string"
-                     :name="'description'+state.bug.id"
-                     :id="'description'+state.bug.id"
-                     placeholder="0"
-                     required
-                     v-model="state.bugCopy.description"
-              >
+    <!-- Modal for Edits -->
+    <div class="modal fade"
+         :id="'bug-edit-'+state.bug.id"
+         tabindex="-1"
+         role="dialog"
+         :aria-labelledby="'modelTitleId'+state.bug.id"
+         aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              Edit Bug
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="editBug">
               <div class="form-group">
-                <label for="status">Status:&nbsp; </label>
-                <select class="form-control action" name="status" id="status" v-model="state.bugCopy.closed" required>
-                  <option value="false">
-                    Open
-                  </option>
-                  <option value="true">
-                    Closed
-                  </option>
-                </select>
-              </div>
-              <div v-if="state.bugCopy.closed" class="form-group">
-                <label for="closeDate">Closed Date:&nbsp;</label>
-                <input type="date"
-                       class="form-control action"
-                       name="closeDate"
-                       id="closeDate"
-                       aria-describedby="close-date"
-                       v-model="state.bugCopy.closedDate"
+                <label :for="'title'+state.bug.id" class="">title </label>
+                <input class="mb-2 ml-2"
+                       type="string"
+                       :name="'title'+state.bug.id"
+                       :id="'title'+state.bug.id"
+                       placeholder="title..."
+                       required
+                       v-model="state.bugCopy.title"
                 >
-              </div>
-              <div v-else class="form-group">
-                <label for="closeDate">Closed Date:&nbsp;</label>
-                <input type="date"
-                       class="form-control"
-                       name="closeDate"
-                       id="closeDate"
-                       aria-describedby="close-date"
-                       v-model="state.bugCopy.closedDate"
-                       readonly
+                <label :for="'description'+state.bug.id" class="">description </label>
+                <input class="mb-2 ml-2"
+                       type="string"
+                       :name="'description'+state.bug.id"
+                       :id="'description'+state.bug.id"
+                       placeholder="0"
+                       required
+                       v-model="state.bugCopy.description"
                 >
+                <div class="form-group">
+                  <label for="status">Status:&nbsp; </label>
+                  <select class="form-control action" name="status" id="status" v-model="state.bugCopy.closed" required>
+                    <option value="false">
+                      Open
+                    </option>
+                    <option value="true">
+                      Closed
+                    </option>
+                  </select>
+                </div>
+                <div v-if="state.bugCopy.closed" class="form-group">
+                  <label for="closeDate">Closed Date:&nbsp;</label>
+                  <input type="date"
+                         class="form-control action"
+                         name="closeDate"
+                         id="closeDate"
+                         aria-describedby="close-date"
+                         v-model="state.bugCopy.closedDate"
+                  >
+                </div>
+                <div v-else class="form-group">
+                  <label for="closeDate">Closed Date:&nbsp;</label>
+                  <input type="date"
+                         class="form-control"
+                         name="closeDate"
+                         id="closeDate"
+                         aria-describedby="close-date"
+                         v-model="state.bugCopy.closedDate"
+                         readonly
+                  >
+                </div>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                  Close
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  Save
+                </button>
               </div>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                Close
-              </button>
-              <button type="submit" class="btn btn-primary">
-                Save
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -203,6 +203,7 @@ export default {
   setup() {
     onMounted(async() => {
       try {
+        await bugsService.getAllBugs()
         await bugsService.getNotesInBug(state.route.params.id)
         const foundBug = AppState.bugs.find(b => b.id === state.route.params.id)
         Object.assign(AppState.bugCopy, foundBug)
@@ -251,7 +252,7 @@ export default {
       async closeBug() {
         try {
           if (state.bugCopy.creatorId === AppState.account.id) {
-            if (Pop.confirm()) {
+            if (await Pop.confirm()) {
               state.bugCopy.closed = true
               state.bugCopy.closedDate = new Date().toString()
               const bug = await bugsService.editBug(state.bugCopy)
@@ -266,7 +267,7 @@ export default {
       async openBug() {
         try {
           if (state.bugCopy.creatorId === AppState.account.id) {
-            if (Pop.confirm()) {
+            if (await Pop.confirm()) {
               state.bugCopy.closed = false
               // FIXME maybe delete edit
               state.bugCopy.closedDate = ''

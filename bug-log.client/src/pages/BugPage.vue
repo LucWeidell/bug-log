@@ -4,7 +4,7 @@
       <div class="col-md-12 py-2">
         <h4>Create Bug:</h4>
       </div>
-      <div class="col-md-12 py-2">
+      <div class="col-md-12 col-sm-12 py-2">
         <form class="d-flex align-items-start justify-conent-between" @submit.prevent="createBug">
           <div class="form-group">
             <label for="title">Title: </label>

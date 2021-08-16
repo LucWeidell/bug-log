@@ -14,11 +14,11 @@
     </div>
     <div v-if="state.color" class="col-md-3 d-flex align-items-center">
       <p>Closed: &nbsp;</p>
-      <i class="fas fa-circle"></i>
+      <i class="fas fa-circle red"></i>
     </div>
     <div v-else class="col-md-3 d-flex align-items-center">
       <p>Open: &nbsp;</p>
-      <i class="far fa-circle"></i>
+      <i class="fas fa-circle green"></i>
     </div>
   </router-link>
 </template>
@@ -49,12 +49,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.fas {
+.red {
   color: rgb(255, 0, 0);
 }
 
-.far {
-  color: rgb(0, 255, 0)
+.green {
+  color: rgb(0, 156, 0)
 }
 
 .BugCard {

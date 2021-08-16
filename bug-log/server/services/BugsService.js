@@ -21,17 +21,28 @@ class BugsService {
   }
 
   async edit(body) {
-    const foundBug = this.getAll({ id: body.id, creatorId: body.creatorId })
-    if (!foundBug) {
-      throw new BadRequest('Invalid ID')
+    const bug = await this.getById(body.id)
+    if (bug.creatorId.toString() === bug.creatorId.toString()) {
+      if (!bug) {
+        throw new BadRequest('Invalid ID')
+      }
+      if (bug.closed) {
+        throw new Forbidden('Bug Already Closed.')
+      }
+      delete body.closed
+      const bugResult = await dbContext.Bugs.findByIdAndUpdate(body.id, body, { new: true, runValidators: true }) // .populate('creator')
+      return bugResult
+    } else {
+      throw new Forbidden('Unauthorized Bug close')
     }
-    const bug = await dbContext.Bugs.findByIdAndUpdate(body.id, body, { new: true, runValidators: true }) // .populate('creator')
-    return bug
   }
 
   async delete(id, userId) {
     const bug = await this.getById(id)
     if (bug.creatorId.toString() === userId) {
+      if (bug.closed) {
+        throw new Forbidden('Bug Already Closed.')
+      }
       bug.closed = true
       bug.closedDate = new Date().toString()
       const result = await dbContext.Bugs.findByIdAndUpdate(bug.id, bug, { new: true, runValidators: true })
