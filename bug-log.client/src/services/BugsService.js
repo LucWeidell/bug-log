@@ -31,9 +31,11 @@ class BugsService {
   }
 
   async removeBug(id) {
-    const res = await api.delete('api/bugs', id)
+    const res = await api.delete('api/bugs/' + id)
     // logger.log('response delete from the server:', res.data)
-    AppState.bugs.filter(b => b.id !== id)
+    const foundBug = AppState.bugs.find(b => b.id === res.data.id)
+    Object.assign(foundBug, res.data)
+    return res.data
   }
 }
 

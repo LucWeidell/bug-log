@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-md-2">
                   <div v-if="state.bug.closed" class="d-flex align-items-center">
-                    <i class="fas fa-3x fa-circle red action" @click="openBug"></i>
+                    <i class="fas fa-3x fa-circle red"></i>
                     <div>
                       <p class="m-0">
                         Status:
@@ -238,13 +238,17 @@ export default {
       }),
       async editBug() {
         try {
-          if (!state.bugCopy.closed) {
-            delete state.bugCopy.closedDate
+          if (state.bugCopy.closed) {
+            const bug = await bugsService.removeBug(state.bugCopy.id)
+            state.bugCopy = bug
+            Pop.toast('Closed Bug', 'success')
+            $('#bug-edit-' + state.bug.id).modal('hide')
+          } else {
+            const bug = await bugsService.editBug(state.bugCopy)
+            state.bugCopy = bug
+            $('#bug-edit-' + state.bug.id).modal('hide')
+            Pop.toast('Successful Bug Edit', 'success')
           }
-          const bug = await bugsService.editBug(state.bugCopy)
-          state.bugCopy = bug
-          $('#bug-edit-' + state.bug.id).modal('hide')
-          Pop.toast('Successful Bug Edit', 'success')
         } catch (error) {
           Pop.toast(error, 'error')
         }
@@ -253,9 +257,7 @@ export default {
         try {
           if (state.bugCopy.creatorId === AppState.account.id) {
             if (await Pop.confirm()) {
-              state.bugCopy.closed = true
-              state.bugCopy.closedDate = new Date().toString()
-              const bug = await bugsService.editBug(state.bugCopy)
+              const bug = await bugsService.removeBug(state.bugCopy.id)
               state.bugCopy = bug
               Pop.toast('Closed Bug', 'success')
             }
@@ -264,22 +266,23 @@ export default {
           Pop.toast(error, 'error')
         }
       },
-      async openBug() {
-        try {
-          if (state.bugCopy.creatorId === AppState.account.id) {
-            if (await Pop.confirm()) {
-              state.bugCopy.closed = false
-              // FIXME maybe delete edit
-              state.bugCopy.closedDate = ''
-              const bug = await bugsService.editBug(state.bugCopy)
-              state.bugCopy = bug
-              Pop.toast('Opened Bug', 'success')
-            }
-          }
-        } catch (error) {
-          Pop.toast(error, 'error')
-        }
-      },
+      // NOTE had to remove since edit cant change status
+      // async openBug() {
+      //   try {
+      //     if (state.bugCopy.creatorId === AppState.account.id) {
+      //       if (await Pop.confirm()) {
+      //         state.bugCopy.closed = false
+      //         // FIXME maybe delete edit
+      //         state.bugCopy.closedDate = ''
+      //         const bug = await bugsService.editBug(state.bugCopy)
+      //         state.bugCopy = bug
+      //         Pop.toast('Opened Bug', 'success')
+      //       }
+      //     }
+      //   } catch (error) {
+      //     Pop.toast(error, 'error')
+      //   }
+      // },
       async createNote() {
         try {
           state.bugCopy.closed = false
