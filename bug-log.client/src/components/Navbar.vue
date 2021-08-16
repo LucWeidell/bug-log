@@ -1,12 +1,11 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <router-link class="navbar-brand d-flex" :to="{ name: 'Home' }">
-      <div class="d-flex flex-column align-items-center">
-        <img
-          alt="logo"
-          src="../assets/img/cw-logo.png"
-          height="45"
-        />
+  <nav class="navbar navbar-expand-lg navbar-dark bg-nav">
+    <router-link class="navbar-brand d-flex" :to="{ name: 'BugPage' }">
+      <div class="d-flex flex-row align-items-center">
+        <i class="fas fa-bug"></i> &nbsp;
+        <h4 class="logo-text">
+          Bugs-List
+        </h4>
       </div>
     </router-link>
     <button
@@ -23,13 +22,8 @@
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <router-link :to="{ name: 'Home' }" class="nav-link">
-            Home
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link :to="{ name: 'About' }" class="nav-link">
-            About
+          <router-link :to="{ name: 'BugPage' }" class="nav-link text-light">
+            Bugs
           </router-link>
         </li>
       </ul>
@@ -122,5 +116,17 @@ a:hover {
 }
 .nav-item .nav-link.router-link-exact-active{
   color: var(--primary);
+}
+
+.logo-text{
+    color: rgb(20, 136, 245);
+
+}
+.fa-bug{
+  color: rgb(20, 136, 245);
+}
+
+.bg-nav{
+  background-color: rgb(7, 14, 75);
 }
 </style>
