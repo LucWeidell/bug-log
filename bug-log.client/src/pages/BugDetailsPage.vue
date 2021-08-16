@@ -74,7 +74,7 @@
                   <h4>Notes</h4>
                 </div>
                 <div class="col-md-10 pt-3 mx-5">
-                  <form v-if="state.user.isAuthenticated && ((!state.bugCopy.closed)===true)" @submit.prevent="createNote">
+                  <form v-if="state.user.isAuthenticated && ((!state.bug.closed)===true)" @submit.prevent="createNote">
                     <div class="form-group">
                       <textarea class="form-control"
                                 name="body"
@@ -206,7 +206,7 @@ export default {
       try {
         await bugsService.getNotesInBug(state.route.params.id)
         const foundBug = AppState.bugs.find(b => b.id === state.route.params.id)
-        AppState.bugCopy = { ...foundBug }
+        AppState.bugCopy = Object.assign({}, foundBug)
         state.bugCopy = AppState.bugCopy
       } catch (error) {
         Pop.toast(error, 'error')
@@ -221,10 +221,7 @@ export default {
       bugCopy: {},
       newNote: {},
       user: computed(() => AppState.user),
-      notes: computed(() => {
-        logger.log('my computed notes:', AppState.notes[route.params.id])
-        return AppState.notes[route.params.id]
-      })
+      notes: computed(() => AppState.notes[route.params.id])
     })
     // logger.log('Real bug:', state.bug)
     // logger.log('Copy bug:', state.bugCopy)

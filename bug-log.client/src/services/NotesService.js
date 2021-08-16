@@ -25,7 +25,7 @@ class NotesService {
     const res = await api.delete('api/notes/' + id)
     logger.log('response delete from the server remove note:', res.data)
     logger.log('Appstate notes in delete:', AppState.notes[res.data.bugId])
-    const finalArray = AppState.notes[id]
+    const finalArray = AppState.notes[res.data.bugId]
     AppState.notes[res.data.bugId] = finalArray.filter(n => n.id !== id)
   }
 }
