@@ -7,7 +7,6 @@
             <div class="col-md-3 ml-5 bg-yellow border border-dark">
               <h2>{{ state.bug.title }}</h2>
             </div>
-            <!-- FIXME add below:::: v-if="isCreator && (state.bug.closed === false)" -->
             <div v-if="isCreator && (!state.bug.closed === true)" class="col-md-1 p-0 bg-pencil d-flex justify-content-center border border-dark">
               <i class="fas fa-3x fa-pencil-alt action" data-toggle="modal" :data-target="'#bug-edit-' + state.bug.id"></i>
             </div>
@@ -143,7 +142,7 @@
               >
               <div class="form-group">
                 <label for="status">Status:&nbsp; </label>
-                <select class="form-control action" name="status" id="status" v-model="state.bug.closed" required>
+                <select class="form-control action" name="status" id="status" v-model="state.bugCopy.closed" required>
                   <option value="false">
                     Open
                   </option>
@@ -195,7 +194,7 @@ import { AppState } from '../AppState'
 import { bugsService } from '../services/BugsService'
 import { notesService } from '../services/NotesService'
 import Pop from '../utils/Notifier'
-import { logger } from '../utils/Logger'
+// import { logger } from '../utils/Logger'
 import { dateFormatter } from '../utils/DateFormat'
 
 export default {
@@ -206,7 +205,7 @@ export default {
       try {
         await bugsService.getNotesInBug(state.route.params.id)
         const foundBug = AppState.bugs.find(b => b.id === state.route.params.id)
-        AppState.bugCopy = Object.assign({}, foundBug)
+        Object.assign(AppState.bugCopy, foundBug)
         state.bugCopy = AppState.bugCopy
       } catch (error) {
         Pop.toast(error, 'error')
@@ -243,7 +242,7 @@ export default {
           }
           const bug = await bugsService.editBug(state.bugCopy)
           state.bugCopy = bug
-          $('#edit-bug-' + state.route.params.id).modal('hide')
+          $('#bug-edit-' + state.bug.id).modal('hide')
           Pop.toast('Successful Bug Edit', 'success')
         } catch (error) {
           Pop.toast(error, 'error')
@@ -252,11 +251,13 @@ export default {
       async closeBug() {
         try {
           if (state.bugCopy.creatorId === AppState.account.id) {
-            state.bugCopy.closed = true
-            state.bugCopy.closedDate = new Date().toString()
-            const bug = await bugsService.editBug(state.bugCopy)
-            state.bugCopy = bug
-            Pop.toast('Closed Bug', 'success')
+            if (Pop.confirm()) {
+              state.bugCopy.closed = true
+              state.bugCopy.closedDate = new Date().toString()
+              const bug = await bugsService.editBug(state.bugCopy)
+              state.bugCopy = bug
+              Pop.toast('Closed Bug', 'success')
+            }
           }
         } catch (error) {
           Pop.toast(error, 'error')
@@ -265,12 +266,14 @@ export default {
       async openBug() {
         try {
           if (state.bugCopy.creatorId === AppState.account.id) {
-            state.bugCopy.closed = false
-            // FIXME maybe delete edit
-            state.bugCopy.closedDate = ''
-            const bug = await bugsService.editBug(state.bugCopy)
-            state.bugCopy = bug
-            Pop.toast('Opened Bug', 'success')
+            if (Pop.confirm()) {
+              state.bugCopy.closed = false
+              // FIXME maybe delete edit
+              state.bugCopy.closedDate = ''
+              const bug = await bugsService.editBug(state.bugCopy)
+              state.bugCopy = bug
+              Pop.toast('Opened Bug', 'success')
+            }
           }
         } catch (error) {
           Pop.toast(error, 'error')

@@ -104,7 +104,7 @@ import { AppState } from '../AppState'
 import { bugsService } from '../services/BugsService'
 import { computed, onMounted } from '@vue/runtime-core'
 import { useRouter } from 'vue-router'
-import { logger } from '../utils/Logger'
+// import { logger } from '../utils/Logger'
 
 export default {
   name: 'BugPage',
@@ -134,7 +134,7 @@ export default {
             delete state.newBug.closedDate
           }
           // eslint-disable-next-line no-unused-vars
-          const bug = bugsService.createBug(state.newBug)
+          const bug = await bugsService.createBug(state.newBug)
           state.newBug = {}
           Pop.toast('Added Bug', 'success')
           router.push({ name: 'BugDetails', params: { id: bug.id } })
@@ -148,16 +148,16 @@ export default {
           if (state.filterKey === 3) {
             state.filterKey = 0
           }
-          logger.log('option to check:', state.filterOption[state.filterKey])
+          // logger.log('option to check:', state.filterOption[state.filterKey])
           switch (state.filterOption[state.filterKey]) {
             case 'all':
               await bugsService.getAllBugs()
-              logger.log(AppState.bugs.length)
+              // logger.log(AppState.bugs.length)
               break
             case 'closed':
               await bugsService.getAllBugs()
               AppState.bugs = AppState.bugs.filter(b => b.closed === true)
-              logger.log(AppState.bugs.length)
+              // logger.log(AppState.bugs.length)
               break
             case 'open':
               await bugsService.getAllBugs()

@@ -25,7 +25,7 @@
 import { reactive } from '@vue/reactivity'
 import { computed } from '@vue/runtime-core'
 import { AppState } from '../AppState'
-import { logger } from '../utils/Logger'
+// import { logger } from '../utils/Logger'
 import { notesService } from '../services/NotesService'
 import Pop from '../utils/Notifier'
 
@@ -38,7 +38,7 @@ export default {
     }
   },
   setup(props) {
-    logger.log('Note Prop:', props.note)
+    // logger.log('Note Prop:', props.note)
     const state = reactive({
       isCreator: computed(() => props.note.creatorId === AppState.account.id)
     })
@@ -46,9 +46,10 @@ export default {
       state,
       async removeNote() {
         try {
-          logger.log('I GOT HERE')
-          await notesService.removeNote(props.note.id)
-          Pop.toast('Removed Message!', 'success')
+          if (await Pop.confirm()) {
+            await notesService.removeNote(props.note.id)
+            Pop.toast('Removed Message!', 'success')
+          }
         } catch (error) {
           Pop.toast(error, 'error')
         }
