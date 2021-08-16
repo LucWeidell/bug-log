@@ -137,8 +137,7 @@ export default {
           const bug = bugsService.createBug(state.newBug)
           state.newBug = {}
           Pop.toast('Added Bug', 'success')
-          // FIXME uncomment when the page is made
-          // router.push({ name: 'BugDetails', params: { id: bug.id } })
+          router.push({ name: 'BugDetails', params: { id: bug.id } })
         } catch (error) {
           Pop.toast(error, 'error')
         }

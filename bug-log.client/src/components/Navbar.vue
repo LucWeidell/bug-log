@@ -126,7 +126,4 @@ a:hover {
   color: rgb(20, 136, 245);
 }
 
-.bg-nav{
-  background-color: rgb(7, 14, 75);
-}
 </style>

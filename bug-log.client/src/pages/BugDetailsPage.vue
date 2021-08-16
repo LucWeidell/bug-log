@@ -51,7 +51,7 @@
                         Status:
                       </p>
                       <h5 class="m-0">
-                        Closed: &nbsp;
+                        Open: &nbsp;
                       </h5>
                     </div>
                   </div>
@@ -74,7 +74,7 @@
                   <h4>Notes</h4>
                 </div>
                 <div class="col-md-10 pt-3 mx-5">
-                  <form v-if="state.user.isAuthenticated && (!state.bugCopy.closed===true)" @submit.prevent="createNote">
+                  <form v-if="state.user.isAuthenticated && ((!state.bugCopy.closed)===true)" @submit.prevent="createNote">
                     <div class="form-group">
                       <textarea class="form-control"
                                 name="body"
@@ -92,7 +92,7 @@
                     </div>
                   </form>
                 </div>
-                <div class="col-md-10 pt-3 mx-5" v-for="n in state.notes" :key="n.id">
+                <div class="col-md-10 pt-3 mx-5" v-for="n in state.notes" :key="n">
                   <NoteCard :note="n" />
                 </div>
               </div>
@@ -152,7 +152,7 @@
                   </option>
                 </select>
               </div>
-              <div v-if="state.bugCopy.closed === 'true'" class="form-group">
+              <div v-if="state.bugCopy.closed" class="form-group">
                 <label for="closeDate">Closed Date:&nbsp;</label>
                 <input type="date"
                        class="form-control action"
@@ -202,25 +202,29 @@ export default {
   name: 'BugDetails',
   route: useRoute(),
   setup() {
-    const route = useRoute()
     onMounted(async() => {
       try {
         await bugsService.getNotesInBug(state.route.params.id)
         const foundBug = AppState.bugs.find(b => b.id === state.route.params.id)
         AppState.bugCopy = { ...foundBug }
         state.bugCopy = AppState.bugCopy
-        logger.log('Copy bug Mount:', state.bugCopy)
       } catch (error) {
         Pop.toast(error, 'error')
       }
     })
+    const route = useRoute()
+    const bugId = route.params.id
+
     const state = reactive({
       route: route,
-      notes: computed(() => AppState.notes[route.params.id]),
       bug: computed(() => AppState.bugs.find(b => b.id === route.params.id)),
       bugCopy: {},
       newNote: {},
-      user: computed(() => AppState.user)
+      user: computed(() => AppState.user),
+      notes: computed(() => {
+        logger.log('my computed notes:', AppState.notes[route.params.id])
+        return AppState.notes[route.params.id]
+      })
     })
     // logger.log('Real bug:', state.bug)
     // logger.log('Copy bug:', state.bugCopy)
@@ -229,6 +233,8 @@ export default {
 
     return {
       state,
+      bugId,
+      route,
       dateFormatter,
       isCreator: computed(() => {
         return state.bug.creatorId === AppState.account.id
