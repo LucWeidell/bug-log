@@ -25,16 +25,16 @@ class BugsService {
     if (!foundBug) {
       throw new BadRequest('Invalid ID')
     }
-    const bug = await dbContext.Bugs.findOneAndUpdate(body.id, body, { new: true, runValidators: true }) // .populate('creator')
+    const bug = await dbContext.Bugs.findByIdAndUpdate(body.id, body, { new: true, runValidators: true }) // .populate('creator')
     return bug
   }
 
   async delete(id, userId) {
     const bug = await this.getById(id)
-    if (bug.creatorId === userId) {
+    if (bug.creatorId.toString() === userId) {
       bug.closed = true
       bug.closedDate = new Date().toString()
-      const result = await this.edit(bug)
+      const result = await dbContext.Bugs.findByIdAndUpdate(bug.id, bug, { new: true, runValidators: true })
       return result
     } else if (!bug) {
       throw new BadRequest('Invalid ID')
