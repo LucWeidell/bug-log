@@ -20,6 +20,7 @@ class BugsService {
     const res = await api.post('api/bugs', rawBug)
     // logger.log('response from the server:', res.data)
     AppState.bugs.push(res.data)
+    return res.data
   }
 
   async editBug(rawBug) {
